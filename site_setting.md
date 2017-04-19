@@ -39,3 +39,6 @@ end
 https://github.com/huacnlee/rails-settings-cached
 
 rails-settings-cached这个gem会根据cache-db-yml的顺序取出value，如果想封装一定的逻辑，直接把方法写在生成的Setting类里就可以了
+
+例子的话可以看这里
+https://github.com/ruby-china/homeland/blob/master/app/models/setting.rb#L33
