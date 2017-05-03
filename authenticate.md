@@ -21,19 +21,19 @@ devise有sessions、passwords、registrations三个controller以及一些views�
 
 ### 要能够处理验证失败的结果
 
-__比如没通过验证就重定向到登录界面__
+_比如没通过验证就重定向到登录界面_
 
 这个功能，主要是devise在初始化的时候，把Devise::FailureApp写入到warden的配置里。这样warden在无法命中用户身份的时候，就知道该怎么做了
 
 ### 要支持多个表的身份验证
 
-__比如支持同时登录user和admin__
+_比如支持同时登录user和admin_
 
 这个功能warden本来就支持多个scope
 
 ### 要支持多种验证策略
 
-__比如先从session里找user_id，然后到header里找token等等，支持多种命中策略__
+_比如先从session里找user_id，然后到header里找token等等，支持多种命中策略_
 
 warden是根据scope的strategy列表挨个命中的，所以这个功能只需要devise提前把strategy注册好就可以了
 
