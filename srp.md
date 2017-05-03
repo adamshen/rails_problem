@@ -1,0 +1,25 @@
+## SRP
+MVC模型在业务逻辑越来越庞大的情况下，往往需要把一些逻辑封装在单独的ruby class里
+
+这个一是为了SRP，毕竟一些纯粹的业务上的逻辑不应该是在Model或者Controller了层里的。另外是为了DRY，view层共用的逻辑可以封装到helper里，可是不同的model之间共用的逻辑，或者controller和model之间共用的逻辑，却没有一个标准的地方来放
+
+在具体的项目实践里，大家发明了很多的概念和方法，用于解决SRP和DRY的挑战
+
+但话说回来，即使将整个后端的业务逻辑放在model层，也不能说这样做就不对。其实这牵涉到一个程序结构的问题，就是在冗余代码和抽象层次之间，寻找一个合适的平衡点
+
+### Concern
+concern是Rails给出的分割代码的一种方式，其实就是利用mixin来分割一个较大的model或者controller，使用concern的好处是可以方便的使用rails dsl也无需担心循环include
+
+### Aggregation
+Aggregation可以简化model，将本地model的一些attribute map过去，然后再将方法委托到Aggregation Class来处理。使用委托的方式并不会将多余的方法代入到model里，所以不会产生冗余代码。最经常使用的例子是Value objects
+
+### presenter
+presenter和helper有点类似，都是封装view层的逻辑。但是presenter更像是前端项目里的view-model层，就是处理model和view层之间的逻辑
+
+比如说从model里取出一个树型的数据，但是实际放到页面上，需要计算下哪些树展是需要展开的
+
+### service
+service用单独的ruby class来抽象代码。举个例子说，几个controller之中共用的一段逻辑，这段逻辑调了好几个model，不适合单独放在某一个model里，这时候就可以写一个service
+
+## 总结
+一个大的controller或者model使用concern的方式来进行分割,可以增加一个presenter层来处理vm之间的逻辑,model和controller之间共用的逻辑可以写service
