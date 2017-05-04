@@ -1,11 +1,7 @@
 # Site Setting
-有时候需要存储和读取站点配置
+有时候需要存储和读取站点配置, 这个功能从逻辑上可以拆分成三层
 
-```ruby
-I18n.locale = (SiteSetting.default_locale || :en) rescue :en
-```
-
-这个功能从逻辑上可以拆分成三层
+![Setting](https://github.com/adamshen/rails_problem/blob/master/images/setting.png)
 
 ### Data Source
 实际的存储介质，站点的配置可以存在文件里，也可以存在cache或者数据库里
@@ -17,23 +13,10 @@ I18n.locale = (SiteSetting.default_locale || :en) rescue :en
 ### Access Control
 从多个Provider中读出配置里的key-value键值对，能够实现namespace以及处理I/O错误
 
-```ruby
-Config = Configurate::Settings.create do
-  add_provider Configurate::Provider::Env
-  add_provider Configurate::Provider::YAML, '/etc/app_settings.yml',
-               namespace: Rails.env, required: false
-  add_provider Configurate::Provider::YAML, 'config/default_settings.yml'
-end
-```
 ### Logic
 根据上一层取出的value，封装一定的逻辑
 
 显然根据SRP原则，这类需要应该独立封装在一个类里，以供其他类调用
-```ruby
-def self.email_polling_enabled?
-  SiteSetting.manual_polling_enabled? || SiteSetting.pop3_polling_enabled?
-end
-```
 
 ## gem
 https://github.com/huacnlee/rails-settings-cached
