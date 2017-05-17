@@ -1,45 +1,43 @@
 # authenticate
-认证几乎是大多数应用需要的功能，以至于django是直接把它集成在框架内部的，对于Rails来说，一般是用devise
+## 需求
+用户身份验证
 
+## 问题
+- 要实现注册、登陆／登出、修改密码
+- 多种验证策略
+- 支持多个设备同时登陆(多浏览器、多设备)
+- 验证失败以后的行为处理(跳到注册页面，提示密码错误)
+- 支持多个表的身份验证
+- security
+
+## gems
 https://github.com/plataformatec/devise
 
-devise依赖了warden和bcrypt，是一个Rails engine，相当于一个直接嵌入Rails的组件
-
+## 解决思路
 ![devise](https://github.com/adamshen/rails_problem/blob/master/images/devise.png)
 
-authenticate要解决的问题至少应该有这些
-
 ### 注册、登陆/登出、修改密码
+注册、登陆、修改密码都必须要有相应的页面，所以要写controller以及view。注册和修改密码都只是写user表的内容，登陆和登出则需要交给其他的service来处理。
 
-devise有sessions、passwords、registrations三个controller来完成这些功能，分别对应登陆、修改密码和注册
+devise有sessions、passwords、registrations三个controller来完成这些功能，分别对应登陆、修改密码和注册。注册和修改密码会去写user-model，登陆和登出则会交给warden去处理。
 
-主要的实现方式是在controller里调env['warden']对象的方法来进行身份确认，把用户信息写在devise generator生成的user-model里
+### 多种验证策略
+用一个strategy array来实现，写一个父类，把request传给它，并定义好strategy的接口和返回类型。不同的strategy都继承这个类，然后实现自己的验证逻辑。
+
+warden是根据scope的strategy列表挨个命中的，devise在初始化好之后，会在warden注册自己的strategy列表。
 
 ### 支持多个设备同时登陆
+每次通过用户名密码登陆以后，发token或者加密后的cookies给client。
 
-对于Rails来说，只管接收warden传过来的user对象，并不关心user对象是哪种warden strategy命中的
+controller只管接收warden传过来的user对象，并不关心user对象是哪种warden strategy命中的，要说warden支持多个不同设备的登录，倒不如说warden支持不同strategy的登录， warden对每一次的authenticate都一视同仁。
 
-要说warden支持多个不同设备的登录，倒不如说warden支持不同strategy的登录， warden对每一次的authenticate都一视同仁
+### 验证失败以后的行为处理
+strategy跑完之后，检查到底为何验证失败，然后返回对应的结果。
 
-### 要能够处理验证失败的结果
-
-这个功能，主要是devise在初始化的时候，把Devise::FailureApp写入到warden的配置里。这样warden在无法命中用户身份的时候，就知道该怎么做了
+devise在初始化的时候，会把Devise::FailureApp写入到warden的配置里。这样warden在无法命中用户身份的时候，就知道该怎么做了。
 
 ### 要支持多个表的身份验证
-
-warden本来就支持多个scope, 对应devise里的map
-
-### 要支持多种验证策略
-
-warden是根据scope的strategy列表挨个命中的，所以这个功能只需要devise提前把strategy注册好就可以了
-
-devise定义了maps，一个map对应一个scope和一个model，每个scope都注册一样的strategy列表。对于它们strategy具体行为的不同，就用model里的dsl来指定
+namespace
 
 ### security
-
-首先是cookies有secret_key来进行加密，所以secret_key不能泄露。但就算对方能够伪造session，也还有auth_salt这一关。而用户密码的验证通过bcrypt来验证，应该即使字典泄露也不会被解出来
-
-### 自定义
-所以devise的用法很简单，用generator生成model即可。如果非要想改变devise的行为，可以自己在user-model里写一些方法，然后在devise model的dsl里，删去devise对应的module
-
-比方说不用devise的注册模块，要自己写，就删掉registrable。这样连对应的controller都不会有，然后就可以自己DIY了
+不存密码明文，密码加密后用bcrypt来验证。将cookies用secret_key + auth_salt来进行加密解密。
