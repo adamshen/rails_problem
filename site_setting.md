@@ -1,6 +1,6 @@
 # Site Setting
 ## 需求
-有时候需要存储和读取站点配置
+存储和读取站点配置
 
 ## 问题
 - 需要支持多个Data Source(cache yml db)
