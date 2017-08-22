@@ -24,7 +24,7 @@ Cache
 ### Gems
 [站点配置](https://github.com/adamshen/rails_problem/blob/master/site_setting.md)
 
-文件上传
+[文件上传](https://github.com/adamshen/rails_problem/blob/master/upload.md)
 
 [用户认证](https://github.com/adamshen/rails_problem/blob/master/authenticate.md)
 
