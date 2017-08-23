@@ -28,7 +28,7 @@ Cache
 
 [用户认证](https://github.com/adamshen/rails_problem/blob/master/authenticate.md)
 
-权限管理
+[权限管理](https://github.com/adamshen/rails_problem/blob/master/authorization.md)
 
 json builder
 
